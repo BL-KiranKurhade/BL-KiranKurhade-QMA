@@ -1,0 +1,95 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      routes:
+        # ── Business API routes ────────────────────────────────────────────────
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+
+        - id: conversion-service
+          uri: lb://conversion-service
+          predicates:
+            - Path=/api/convert/**
+          filters:
+            - StripPrefix=0
+
+        # ── Swagger API-Docs aggregation routes ───────────────────────────────
+        # Each rewrites /v3/api-docs/<service> → /v3/api-docs on the target service
+        - id: auth-service-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/v3/api-docs/auth-service
+          filters:
+            - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
+
+        - id: conversion-service-docs
+          uri: lb://conversion-service
+          predicates:
+            - Path=/v3/api-docs/conversion-service
+          filters:
+            - RewritePath=/v3/api-docs/conversion-service, /v3/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+    eureka-server-connect-timeout-seconds: 5
+    eureka-server-read-timeout-seconds: 5
+    initial-instance-info-replication-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# ── Springdoc / Swagger UI aggregated at the gateway ──────────────────────────
+# Access: http://localhost:8080/swagger-ui.html
+# Use the top-right dropdown to switch between services
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth-service
+      - name: conversion-service
+        url: /v3/api-docs/conversion-service
+    operationsSorter: method
+    tagsSorter: alpha
+    try-it-out-enabled: true
+    display-request-duration: true
