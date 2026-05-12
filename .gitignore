@@ -42,3 +42,45 @@ buildNumber.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Maven build folder
+target/
+
+# Java compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# Eclipse files
+.settings/
+.classpath
+.project
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+tmp/
+temp/
+
+# Maven wrapper (optional)
+# .mvn/
+# mvnw
+# mvnw.cmd
