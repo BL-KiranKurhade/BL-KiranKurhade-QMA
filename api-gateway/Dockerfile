@@ -43,7 +43,4 @@ ENV SPRING_PROFILES_ACTIVE=docker
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS \
-    -Deureka.client.service-url.defaultZone=${EUREKA_URI} \
-    -Dspring.cloud.gateway.globalcors.corsConfigurations.[/**].allowedOrigins=${CORS_ALLOWED_ORIGINS} \
-    -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

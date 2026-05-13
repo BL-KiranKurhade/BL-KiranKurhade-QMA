@@ -42,10 +42,4 @@ ENV JWT_SECRET=QMAAuthServiceSecretKey2024ForJWTTokenSigningMustBe256BitsLong
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
     CMD curl -f http://localhost:8082/api/convert/health || exit 1
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS \
-    -Dspring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true \
-    -Dspring.datasource.username=${MYSQL_USER} \
-    -Dspring.datasource.password=${MYSQL_PASSWORD} \
-    -Deureka.client.service-url.defaultZone=${EUREKA_URI} \
-    -Dapp.jwt.secret=${JWT_SECRET} \
-    -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

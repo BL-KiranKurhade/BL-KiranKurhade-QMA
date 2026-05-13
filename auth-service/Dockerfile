@@ -45,12 +45,4 @@ ENV CORS_ALLOWED_ORIGINS=http://localhost:3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
     CMD curl -f http://localhost:8083/actuator/health || exit 1
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS \
-    -Dspring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true \
-    -Dspring.datasource.username=${MYSQL_USER} \
-    -Dspring.datasource.password=${MYSQL_PASSWORD} \
-    -Deureka.client.service-url.defaultZone=${EUREKA_URI} \
-    -Dapp.jwt.secret=${JWT_SECRET} \
-    -Dapp.jwt.expiration=${JWT_EXPIRATION} \
-    -Dapp.cors.allowed-origins=${CORS_ALLOWED_ORIGINS} \
-    -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
