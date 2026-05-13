@@ -10,12 +10,44 @@ import DashboardPage     from './pages/DashboardPage';
 
 const theme = createTheme({
   palette: {
-    primary:    { main: '#1976d2' },
-    secondary:  { main: '#9c27b0' },
-    background: { default: '#f5f7fa' },
+    mode: 'dark',
+    primary:    { main: '#a855f7' },
+    secondary:  { main: '#ec4899' },
+    background: {
+      default: '#0a0a1a',
+      paper:   '#13132b',
+    },
+    text: {
+      primary:   '#ffffff',
+      secondary: '#9ca3af',
+    },
   },
-  typography: { fontFamily: 'Roboto, sans-serif' },
-  shape: { borderRadius: 8 },
+  typography: {
+    fontFamily: "'Inter', 'Roboto', sans-serif",
+  },
+  shape: { borderRadius: 16 },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: { textTransform: 'none', fontWeight: 600 },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: { borderRadius: 12 },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          '& fieldset': { borderColor: 'rgba(168,85,247,0.3)' },
+          '&:hover fieldset': { borderColor: 'rgba(168,85,247,0.6)' },
+          '&.Mui-focused fieldset': { borderColor: '#a855f7' },
+        },
+      },
+    },
+  },
 });
 
 export default function App() {
@@ -24,7 +56,10 @@ export default function App() {
       <CssBaseline />
       <AuthProvider>
         <BrowserRouter>
-          <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+          <Box sx={{
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg, #0a0a1a 0%, #130d2e 50%, #0a0a1a 100%)',
+          }}>
             <Navbar />
             <Routes>
               <Route path="/"          element={<Navigate to="/dashboard" replace />} />
@@ -33,7 +68,6 @@ export default function App() {
               <Route path="/dashboard" element={
                 <ProtectedRoute><DashboardPage /></ProtectedRoute>
               } />
-              {/* Catch-all — redirect to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </Box>
