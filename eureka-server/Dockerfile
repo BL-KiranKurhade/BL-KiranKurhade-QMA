@@ -8,9 +8,6 @@ FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
-# Copy parent pom first (for dependency caching)
-COPY ../pom.xml /parent-pom.xml
-
 # Copy service pom and source
 COPY pom.xml .
 COPY src ./src
