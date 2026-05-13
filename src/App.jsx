@@ -10,22 +10,22 @@ import DashboardPage     from './pages/DashboardPage';
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
-    primary:    { main: '#a855f7' },
-    secondary:  { main: '#ec4899' },
+    mode: 'light',
+    primary:    { main: '#4361EE' },
+    secondary:  { main: '#4ECDC4' },
     background: {
-      default: '#0a0a1a',
-      paper:   '#13132b',
+      default: '#EEF0F8',
+      paper:   '#ffffff',
     },
     text: {
-      primary:   '#ffffff',
-      secondary: '#9ca3af',
+      primary:   '#1a1a2e',
+      secondary: '#777777',
     },
   },
   typography: {
     fontFamily: "'Inter', 'Roboto', sans-serif",
   },
-  shape: { borderRadius: 16 },
+  shape: { borderRadius: 8 },
   components: {
     MuiButton: {
       styleOverrides: {
@@ -34,17 +34,22 @@ const theme = createTheme({
     },
     MuiSelect: {
       styleOverrides: {
-        root: { borderRadius: 12 },
+        root: { borderRadius: 8 },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          '& fieldset': { borderColor: 'rgba(168,85,247,0.3)' },
-          '&:hover fieldset': { borderColor: 'rgba(168,85,247,0.6)' },
-          '&.Mui-focused fieldset': { borderColor: '#a855f7' },
+          borderRadius: 8,
+          '& fieldset': { borderColor: '#E0E0E0' },
+          '&:hover fieldset': { borderColor: '#4361EE' },
+          '&.Mui-focused fieldset': { borderColor: '#4361EE' },
         },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: { borderColor: '#E0E0E0' },
       },
     },
   },
@@ -56,10 +61,7 @@ export default function App() {
       <CssBaseline />
       <AuthProvider>
         <BrowserRouter>
-          <Box sx={{
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #0a0a1a 0%, #130d2e 50%, #0a0a1a 100%)',
-          }}>
+          <Box sx={{ minHeight: '100vh', background: '#EEF0F8' }}>
             <Navbar />
             <Routes>
               <Route path="/"          element={<Navigate to="/dashboard" replace />} />
