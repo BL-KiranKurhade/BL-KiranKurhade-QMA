@@ -1,0 +1,21 @@
+package com.qma.eureka;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+/**
+ * UC21 - Eureka Service Registry
+ * All microservices register here for discovery.
+ * Dashboard: http://localhost:8761
+ */
+
+
+@SpringBootApplication
+@EnableEurekaServer
+public class EurekaServerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaServerApplication.class, args);
+        System.out.println("\n✔ Eureka Server started at http://localhost:8761");
+    }
+}
