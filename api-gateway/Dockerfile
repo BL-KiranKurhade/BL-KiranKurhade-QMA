@@ -9,10 +9,15 @@ FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
+# Copy the parent pom
 COPY pom.xml .
-COPY src ./src
 
-RUN mvn clean package -DskipTests --no-transfer-progress \
+# Copy the service pom and source
+COPY api-gateway/pom.xml ./api-gateway/
+COPY api-gateway/src ./api-gateway/src
+
+# Build only the specific module
+RUN mvn clean package -pl api-gateway -am -DskipTests --no-transfer-progress \
     -Dmaven.repo.local=/root/.m2/repository
 
 # ---- Stage 2: Runtime ----------------------------------------------
@@ -25,15 +30,18 @@ WORKDIR /app
 RUN addgroup -S qma && adduser -S qma -G qma
 USER qma
 
-COPY --from=builder /app/target/api-gateway-*.jar app.jar
+# Copy from the module's target directory
+COPY --from=builder /app/api-gateway/target/api-gateway-*.jar app.jar
 
 # Main gateway port (all frontend traffic comes through here)
 EXPOSE 8080
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
 ENV SPRING_PROFILES_ACTIVE=docker
-ENV EUREKA_URI=http://eureka-server:8761/eureka/
-ENV CORS_ALLOWED_ORIGINS=http://localhost:3000
+
+# Note: EUREKA_URI and CORS_ALLOWED_ORIGINS must be set as environment variables in Render
+# ENV EUREKA_URI=
+# ENV CORS_ALLOWED_ORIGINS=
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
