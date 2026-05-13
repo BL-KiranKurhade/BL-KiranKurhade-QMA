@@ -1,271 +1,461 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container, Box, Grid, Paper, Typography, Button, TextField,
-  MenuItem, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Alert, Chip, CircularProgress, Divider,
+  Container, Box, Typography, Button, MenuItem, Select,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Chip, CircularProgress, Paper, Tooltip, Snackbar, Alert,
 } from '@mui/material';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import HistoryIcon   from '@mui/icons-material/History';
-import { conversionApi } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import StraightenIcon        from '@mui/icons-material/Straighten';
+import ScaleIcon             from '@mui/icons-material/Scale';
+import DeviceThermostatIcon  from '@mui/icons-material/DeviceThermostat';
+import OpacityIcon           from '@mui/icons-material/Opacity';
+import SwapHorizIcon         from '@mui/icons-material/SwapHoriz';
+import ContentCopyIcon       from '@mui/icons-material/ContentCopy';
+import HistoryIcon           from '@mui/icons-material/History';
+import RefreshIcon           from '@mui/icons-material/Refresh';
+import { conversionApi }     from '../services/api';
+import { useAuth }           from '../context/AuthContext';
 
-// ── Unit configuration — values MUST match the conversion-service backend ─────
-const CATEGORIES = ['LENGTH', 'WEIGHT', 'VOLUME', 'TEMPERATURE'];
+// ── Unit configuration ─────────────────────────────────────────────────────────
+const CATEGORIES = [
+  { id: 'LENGTH',      label: 'Length',  icon: <StraightenIcon /> },
+  { id: 'WEIGHT',      label: 'Weight',  icon: <ScaleIcon /> },
+  { id: 'TEMPERATURE', label: 'Temp',    icon: <DeviceThermostatIcon /> },
+  { id: 'VOLUME',      label: 'Volume',  icon: <OpacityIcon /> },
+];
 
 const UNIT_CONFIG = {
   LENGTH: [
-    { value: 'mm',  label: 'mm  (Millimetre)' },
-    { value: 'cm',  label: 'cm  (Centimetre)' },
-    { value: 'in',  label: 'in  (Inch)' },
-    { value: 'ft',  label: 'ft  (Foot)' },
-    { value: 'yd',  label: 'yd  (Yard)' },
-    { value: 'm',   label: 'm   (Metre)' },
-    { value: 'km',  label: 'km  (Kilometre)' },
-    { value: 'mi',  label: 'mi  (Mile)' },
+    { value: 'mm',  label: 'Millimetres' },
+    { value: 'cm',  label: 'Centimetres' },
+    { value: 'in',  label: 'Inches' },
+    { value: 'ft',  label: 'Feet' },
+    { value: 'yd',  label: 'Yards' },
+    { value: 'm',   label: 'Metres' },
+    { value: 'km',  label: 'Kilometres' },
+    { value: 'mi',  label: 'Miles' },
   ],
   WEIGHT: [
-    { value: 'mg',  label: 'mg  (Milligram)' },
-    { value: 'g',   label: 'g   (Gram)' },
-    { value: 'oz',  label: 'oz  (Ounce)' },
-    { value: 'lb',  label: 'lb  (Pound)' },
-    { value: 'kg',  label: 'kg  (Kilogram)' },
-    { value: 't',   label: 't   (Metric Ton)' },
+    { value: 'mg',  label: 'Milligrams' },
+    { value: 'g',   label: 'Grams' },
+    { value: 'oz',  label: 'Ounces' },
+    { value: 'lb',  label: 'Pounds' },
+    { value: 'kg',  label: 'Kilograms' },
+    { value: 't',   label: 'Metric Tons' },
   ],
   VOLUME: [
-    { value: 'ml',    label: 'ml   (Millilitre)' },
-    { value: 'l',     label: 'L    (Litre)' },
-    { value: 'cup',   label: 'cup' },
-    { value: 'gal',   label: 'gal  (Gallon)' },
-    { value: 'fl_oz', label: 'fl oz' },
-    { value: 'tsp',   label: 'tsp  (Teaspoon)' },
-    { value: 'tbsp',  label: 'tbsp (Tablespoon)' },
+    { value: 'ml',    label: 'Millilitres' },
+    { value: 'l',     label: 'Litres' },
+    { value: 'cup',   label: 'Cups' },
+    { value: 'gal',   label: 'Gallons' },
+    { value: 'fl_oz', label: 'Fluid Ounces' },
+    { value: 'tsp',   label: 'Teaspoons' },
+    { value: 'tbsp',  label: 'Tablespoons' },
   ],
   TEMPERATURE: [
-    { value: 'C', label: '°C  (Celsius)' },
-    { value: 'F', label: '°F  (Fahrenheit)' },
-    { value: 'K', label: 'K   (Kelvin)' },
+    { value: 'C', label: 'Celsius' },
+    { value: 'F', label: 'Fahrenheit' },
+    { value: 'K', label: 'Kelvin' },
   ],
 };
 
-const defaultUnit = (cat) => UNIT_CONFIG[cat]?.[0]?.value ?? '';
+const MODE_TABS = ['Conversion', 'Comparison', 'Arithmetic'];
+
+// ── Styles ─────────────────────────────────────────────────────────────────────
+const card = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(168,85,247,0.15)',
+  borderRadius: 4,
+  backdropFilter: 'blur(12px)',
+};
+
+const inputPanel = {
+  background: 'rgba(0,0,0,0.35)',
+  border: '1px solid rgba(168,85,247,0.2)',
+  borderRadius: 3,
+  p: 3,
+  flex: 1,
+};
+
+const styledSelect = {
+  background: 'transparent',
+  color: '#9ca3af',
+  fontSize: '0.85rem',
+  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+  '& .MuiSvgIcon-root': { color: '#9ca3af' },
+};
 
 // ── Dashboard ──────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { user } = useAuth();
 
-  // converter state
-  const [conv, setConv] = useState({
-    value: '',
-    from:     defaultUnit('LENGTH'),
-    to:       UNIT_CONFIG['LENGTH'][1]?.value ?? 'cm',
-    category: 'LENGTH',
-  });
-  const [convResult, setConvResult] = useState(null);
-  const [convError,  setConvError]  = useState('');
+  const [category, setCategory] = useState('LENGTH');
+  const [modeTab,  setModeTab]  = useState('Conversion');
+  const [fromUnit, setFromUnit] = useState('km');
+  const [toUnit,   setToUnit]   = useState('mi');
+  const [inputVal, setInputVal] = useState('');
+  const [result,   setResult]   = useState(null);
+  const [convError, setConvError] = useState('');
+  const [copied,   setCopied]   = useState(false);
 
-  // conversion history state
   const [history,  setHistory]  = useState([]);
   const [loadingH, setLoadingH] = useState(false);
 
-  // ── Fetch history on mount ───────────────────────────────────────────────────
   useEffect(() => { fetchHistory(); }, []);
+
+  // Reset units when category changes
+  useEffect(() => {
+    const units = UNIT_CONFIG[category] || [];
+    setFromUnit(units[0]?.value ?? '');
+    setToUnit(units[1]?.value ?? units[0]?.value ?? '');
+    setResult(null);
+    setConvError('');
+  }, [category]);
 
   const fetchHistory = async () => {
     setLoadingH(true);
     try {
       const { data } = await conversionApi.getHistory();
       setHistory(Array.isArray(data) ? data : []);
-    } catch {
-      // silently ignore — user may not have converted anything yet
-    } finally {
-      setLoadingH(false);
-    }
+    } catch { /* silent */ }
+    finally { setLoadingH(false); }
   };
 
-  // ── Handle category change — reset units ─────────────────────────────────────
-  const handleCategoryChange = (newCat) => {
-    const units = UNIT_CONFIG[newCat] || [];
-    setConv({
-      category: newCat,
-      value:    conv.value,
-      from:     units[0]?.value ?? '',
-      to:       units[1]?.value ?? units[0]?.value ?? '',
-    });
-    setConvResult(null);
-    setConvError('');
-  };
-
-  // ── Handle conversion ────────────────────────────────────────────────────────
   const handleConvert = async (e) => {
-    e.preventDefault();
-    setConvResult(null);
+    e?.preventDefault();
     setConvError('');
+    if (!inputVal || isNaN(+inputVal)) { setConvError('Enter a valid number'); return; }
     try {
-      const { data } = await conversionApi.convert(
-        conv.value, conv.from, conv.to, conv.category
-      );
-      setConvResult(data);
+      const { data } = await conversionApi.convert(inputVal, fromUnit, toUnit, category);
+      setResult(data);
       fetchHistory();
     } catch (err) {
-      setConvError(
-        err.response?.data?.message || 'Conversion failed — check unit/category combination'
-      );
+      setConvError(err.response?.data?.message || 'Conversion failed');
     }
   };
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  const handleSwap = () => {
+    setFromUnit(toUnit);
+    setToUnit(fromUnit);
+    setResult(null);
+  };
+
+  const handleCopy = () => {
+    if (!result) return;
+    const text = `${result.input} ${result.from} = ${parseFloat(result.result?.toFixed(8))} ${result.to}`;
+    navigator.clipboard.writeText(text).then(() => setCopied(true));
+  };
+
+  const units = UNIT_CONFIG[category] || [];
+  const displayResult = result
+    ? parseFloat(result.result?.toFixed(6))
+    : null;
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 3, mb: 6 }}>
+    <Box sx={{ minHeight: '100vh', py: 6 }}>
+      <Container maxWidth="md">
 
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>Dashboard</Typography>
-        <Typography color="text.secondary">
-          Welcome, <b>{user?.username}</b> — {user?.email}
-        </Typography>
-      </Box>
+        {/* ── Hero Header ──────────────────────────────────────────────────── */}
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography
+            variant="h2"
+            fontWeight={800}
+            sx={{ letterSpacing: '-1px', lineHeight: 1.1, mb: 1 }}
+          >
+            Convert anything,
+          </Typography>
+          <Typography
+            variant="h2"
+            fontWeight={800}
+            sx={{
+              background: 'linear-gradient(90deg, #a855f7, #ec4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-1px',
+              lineHeight: 1.1,
+              mb: 2,
+            }}
+          >
+            beautifully.
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 480, mx: 'auto' }}>
+            The world's most vibrant measurement tool for designers, engineers,
+            and modern creators.
+          </Typography>
+        </Box>
 
-      <Grid container spacing={3}>
+        {/* ── Converter Card ───────────────────────────────────────────────── */}
+        <Box sx={{ ...card, p: 3, mb: 4 }}>
 
-        {/* ── Converter ─────────────────────────────────────────────────────── */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
-              <SwapHorizIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Unit Converter
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+          {/* Step label */}
+          <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: 2, fontWeight: 600 }}>
+            01 / CHOOSE DIMENSION
+          </Typography>
 
-            <Box component="form" onSubmit={handleConvert}>
-              {/* Category */}
-              <TextField
-                fullWidth select label="Category" margin="normal"
-                value={conv.category}
-                onChange={e => handleCategoryChange(e.target.value)}
+          {/* Category tabs */}
+          <Box sx={{ display: 'flex', gap: 1.5, mt: 1.5, mb: 3, flexWrap: 'wrap' }}>
+            {CATEGORIES.map(cat => (
+              <Box
+                key={cat.id}
+                onClick={() => setCategory(cat.id)}
+                sx={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 0.5, px: 3, py: 1.5, borderRadius: 3, cursor: 'pointer',
+                  border: category === cat.id
+                    ? '2px solid #a855f7'
+                    : '2px solid rgba(255,255,255,0.08)',
+                  background: category === cat.id
+                    ? 'rgba(168,85,247,0.12)'
+                    : 'transparent',
+                  color: category === cat.id ? '#a855f7' : '#9ca3af',
+                  transition: 'all 0.2s',
+                  minWidth: 90,
+                  '&:hover': {
+                    border: '2px solid rgba(168,85,247,0.5)',
+                    color: '#a855f7',
+                  },
+                }}
               >
-                {CATEGORIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-              </TextField>
+                {cat.icon}
+                <Typography variant="caption" fontWeight={600}>{cat.label}</Typography>
+              </Box>
+            ))}
+          </Box>
 
-              {/* Value */}
-              <TextField
-                fullWidth label="Value" type="number" margin="normal" required
-                value={conv.value}
-                onChange={e => setConv(c => ({ ...c, value: e.target.value }))}
-                inputProps={{ step: 'any' }}
+          {/* Mode sub-tabs */}
+          <Box sx={{ display: 'flex', gap: 0.5, mb: 3,
+            background: 'rgba(0,0,0,0.3)', borderRadius: 2, p: 0.5, width: 'fit-content' }}>
+            {MODE_TABS.map(tab => (
+              <Box
+                key={tab}
+                onClick={() => setModeTab(tab)}
+                sx={{
+                  px: 2.5, py: 0.8, borderRadius: 1.5, cursor: 'pointer',
+                  background: modeTab === tab ? '#ffffff' : 'transparent',
+                  color: modeTab === tab ? '#000000' : '#9ca3af',
+                  fontWeight: 600, fontSize: '0.85rem',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {tab}
+              </Box>
+            ))}
+          </Box>
+
+          {/* FROM / SWAP / TO row */}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'stretch' }}>
+
+            {/* FROM */}
+            <Box sx={inputPanel}>
+              <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: 1 }}>
+                FROM
+              </Typography>
+              <input
+                type="number"
+                value={inputVal}
+                onChange={e => { setInputVal(e.target.value); setResult(null); }}
+                onKeyDown={e => e.key === 'Enter' && handleConvert()}
+                placeholder="0"
+                style={{
+                  background: 'transparent', border: 'none', outline: 'none',
+                  color: '#ffffff', fontSize: '2.8rem', fontWeight: 700,
+                  width: '100%', display: 'block', marginTop: 8, marginBottom: 12,
+                }}
               />
+              <Select
+                value={fromUnit}
+                onChange={e => { setFromUnit(e.target.value); setResult(null); }}
+                size="small" fullWidth sx={styledSelect}
+              >
+                {units.map(u => (
+                  <MenuItem key={u.value} value={u.value}>{u.label}</MenuItem>
+                ))}
+              </Select>
+            </Box>
 
-              {/* From / To */}
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  <TextField
-                    fullWidth select label="From" margin="normal"
-                    value={conv.from}
-                    onChange={e => setConv(c => ({ ...c, from: e.target.value }))}
-                  >
-                    {(UNIT_CONFIG[conv.category] || []).map(u => (
-                      <MenuItem key={u.value} value={u.value}>{u.label}</MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    fullWidth select label="To" margin="normal"
-                    value={conv.to}
-                    onChange={e => setConv(c => ({ ...c, to: e.target.value }))}
-                  >
-                    {(UNIT_CONFIG[conv.category] || []).map(u => (
-                      <MenuItem key={u.value} value={u.value}>{u.label}</MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-              </Grid>
+            {/* Swap button */}
+            <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+              <Tooltip title="Swap units">
+                <Box
+                  onClick={handleSwap}
+                  sx={{
+                    width: 48, height: 48, borderRadius: '50%', cursor: 'pointer',
+                    background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 20px rgba(168,85,247,0.4)',
+                    transition: 'transform 0.2s',
+                    '&:hover': { transform: 'scale(1.1) rotate(180deg)' },
+                  }}
+                >
+                  <SwapHorizIcon sx={{ color: '#fff' }} />
+                </Box>
+              </Tooltip>
+            </Box>
 
-              <Button type="submit" variant="contained" fullWidth sx={{ mt: 2, py: 1.2 }}>
+            {/* TO RESULT */}
+            <Box sx={inputPanel}>
+              <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: 1 }}>
+                TO RESULT
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '2.8rem', fontWeight: 700, mt: 1, mb: 1.5,
+                  background: displayResult !== null
+                    ? 'linear-gradient(90deg, #a855f7, #ec4899)'
+                    : 'none',
+                  WebkitBackgroundClip: displayResult !== null ? 'text' : 'unset',
+                  WebkitTextFillColor: displayResult !== null ? 'transparent' : '#4b5563',
+                  color: displayResult !== null ? 'transparent' : '#4b5563',
+                }}
+              >
+                {displayResult !== null ? displayResult : '—'}
+              </Typography>
+              <Select
+                value={toUnit}
+                onChange={e => { setToUnit(e.target.value); setResult(null); }}
+                size="small" fullWidth sx={styledSelect}
+              >
+                {units.map(u => (
+                  <MenuItem key={u.value} value={u.value}>{u.label}</MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Box>
+
+          {/* Error */}
+          {convError && (
+            <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>{convError}</Alert>
+          )}
+
+          {/* Footer row */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {['#a855f7', '#ec4899', '#6366f1'].map((c, i) => (
+                <Box key={i} sx={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: c, border: '2px solid #0a0a1a',
+                  ml: i > 0 ? -1 : 0,
+                }} />
+              ))}
+              <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                Supporting 450+ unit pairings instantly.
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="contained"
+                onClick={handleConvert}
+                sx={{
+                  background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                  px: 3, borderRadius: 3,
+                  '&:hover': { background: 'linear-gradient(135deg, #9333ea, #db2777)' },
+                }}
+              >
                 Convert
               </Button>
-
-              {convError && (
-                <Alert severity="error" sx={{ mt: 2 }}>{convError}</Alert>
-              )}
-
-              {convResult && (
-                <Alert severity="success" sx={{ mt: 2, fontSize: '1rem' }}>
-                  <b>{convResult.input} {convResult.from}</b>
-                  {' = '}
-                  <b>
-                    {typeof convResult.result === 'number'
-                      ? parseFloat(convResult.result.toFixed(8))
-                      : convResult.result}
-                    {' '}{convResult.to}
-                  </b>
-                </Alert>
-              )}
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* ── Conversion History ─────────────────────────────────────────────── */}
-        <Grid item xs={12} md={8}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight={600}>
-                <HistoryIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-                My Conversion History
-              </Typography>
-              <Button size="small" onClick={fetchHistory} disabled={loadingH}>
-                Refresh
+              <Button
+                variant="outlined"
+                startIcon={<ContentCopyIcon />}
+                onClick={handleCopy}
+                disabled={!result}
+                sx={{
+                  borderColor: 'rgba(168,85,247,0.4)', color: '#a855f7',
+                  borderRadius: 3, px: 2,
+                  '&:hover': { borderColor: '#a855f7', background: 'rgba(168,85,247,0.08)' },
+                }}
+              >
+                Copy to Clipboard
               </Button>
             </Box>
-            <Divider sx={{ mb: 2 }} />
+          </Box>
+        </Box>
 
-            {loadingH ? (
-              <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress /></Box>
-            ) : (
-              <TableContainer sx={{ maxHeight: 480 }}>
-                <Table size="small" stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell><b>Input</b></TableCell>
-                      <TableCell><b>From</b></TableCell>
-                      <TableCell><b>To</b></TableCell>
-                      <TableCell><b>Result</b></TableCell>
-                      <TableCell><b>Category</b></TableCell>
-                      <TableCell><b>Time</b></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {history.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
-                          No conversions yet — try the converter!
-                        </TableCell>
-                      </TableRow>
-                    ) : history.map(h => (
-                      <TableRow key={h.id} hover>
-                        <TableCell>{h.fromValue}</TableCell>
-                        <TableCell>
-                          <Chip label={h.fromUnit} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell>
-                          <Chip label={h.toUnit} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell><b>{parseFloat(h.result.toFixed(6))}</b></TableCell>
-                        <TableCell>
-                          <Chip label={h.category} size="small" color="primary" variant="outlined" />
-                        </TableCell>
-                        <TableCell sx={{ fontSize: '0.72rem', color: 'text.secondary', whiteSpace: 'nowrap' }}>
-                          {h.createdAt ? new Date(h.createdAt).toLocaleString() : '—'}
-                        </TableCell>
-                      </TableRow>
+        {/* ── History Table ─────────────────────────────────────────────────── */}
+        <Box sx={{ ...card, p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <HistoryIcon sx={{ color: '#a855f7' }} />
+              <Typography fontWeight={700}>Conversion History</Typography>
+            </Box>
+            <Button
+              size="small" startIcon={<RefreshIcon />}
+              onClick={fetchHistory} disabled={loadingH}
+              sx={{ color: '#a855f7', '&:hover': { background: 'rgba(168,85,247,0.08)' } }}
+            >
+              Refresh
+            </Button>
+          </Box>
+
+          {loadingH ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress sx={{ color: '#a855f7' }} /></Box>
+          ) : (
+            <TableContainer sx={{ maxHeight: 380 }}>
+              <Table size="small" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    {['Input', 'From', 'To', 'Result', 'Category', 'Time'].map(col => (
+                      <TableCell
+                        key={col}
+                        sx={{ background: 'rgba(0,0,0,0.4)', color: '#9ca3af',
+                             borderBottom: '1px solid rgba(168,85,247,0.15)', fontWeight: 600 }}
+                      >
+                        {col}
+                      </TableCell>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </Paper>
-        </Grid>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {history.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center"
+                        sx={{ py: 5, color: '#6b7280', border: 'none' }}>
+                        No conversions yet — try the converter above!
+                      </TableCell>
+                    </TableRow>
+                  ) : history.map(h => (
+                    <TableRow key={h.id} sx={{
+                      '&:hover': { background: 'rgba(168,85,247,0.05)' },
+                      '& td': { borderBottom: '1px solid rgba(255,255,255,0.04)' },
+                    }}>
+                      <TableCell sx={{ color: '#e5e7eb' }}>{h.fromValue}</TableCell>
+                      <TableCell>
+                        <Chip label={h.fromUnit} size="small"
+                          sx={{ background: 'rgba(168,85,247,0.15)', color: '#a855f7',
+                               border: '1px solid rgba(168,85,247,0.3)' }} />
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={h.toUnit} size="small"
+                          sx={{ background: 'rgba(236,72,153,0.15)', color: '#ec4899',
+                               border: '1px solid rgba(236,72,153,0.3)' }} />
+                      </TableCell>
+                      <TableCell sx={{ color: '#fff', fontWeight: 700 }}>
+                        {parseFloat(h.result?.toFixed(6))}
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={h.category} size="small"
+                          sx={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8',
+                               border: '1px solid rgba(99,102,241,0.3)', fontSize: '0.7rem' }} />
+                      </TableCell>
+                      <TableCell sx={{ color: '#6b7280', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                        {h.createdAt ? new Date(h.createdAt).toLocaleString() : '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
 
-      </Grid>
-    </Container>
+      </Container>
+
+      {/* Copy toast */}
+      <Snackbar open={copied} autoHideDuration={2500} onClose={() => setCopied(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity="success" sx={{ borderRadius: 3 }}>
+          Result copied to clipboard!
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
