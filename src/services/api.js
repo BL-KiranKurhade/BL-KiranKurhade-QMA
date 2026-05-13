@@ -45,10 +45,11 @@ export const authApi = {
 
 // ── Conversion Service  (routed through Gateway → conversion-service:8082) ────
 export const conversionApi = {
-  convert:     (value, from, to, category) =>
+  convert:      (value, from, to, category) =>
     api.get('/api/convert', { params: { value, from, to, category } }),
   getHistory:   () => api.get('/api/convert/history'),
   getAllHistory: () => api.get('/api/convert/history/all'),
+  clearHistory: () => api.delete('/api/convert/history'),
 };
 
 export default api;
