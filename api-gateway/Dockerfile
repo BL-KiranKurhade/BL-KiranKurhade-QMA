@@ -9,15 +9,12 @@ FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
-# Copy the parent pom
-COPY pom.xml .
-
 # Copy the service pom and source
-COPY api-gateway/pom.xml ./api-gateway/
-COPY api-gateway/src ./api-gateway/src
+COPY pom.xml .
+COPY src ./src
 
-# Build only the specific module
-RUN mvn clean package -pl api-gateway -am -DskipTests --no-transfer-progress \
+# Build the module
+RUN mvn clean package -DskipTests --no-transfer-progress \
     -Dmaven.repo.local=/root/.m2/repository
 
 # ---- Stage 2: Runtime ----------------------------------------------
@@ -30,8 +27,8 @@ WORKDIR /app
 RUN addgroup -S qma && adduser -S qma -G qma
 USER qma
 
-# Copy from the module's target directory
-COPY --from=builder /app/api-gateway/target/api-gateway-*.jar app.jar
+# Copy from the builder target directory
+COPY --from=builder /app/target/api-gateway-*.jar app.jar
 
 # Main gateway port (all frontend traffic comes through here)
 EXPOSE 8080
