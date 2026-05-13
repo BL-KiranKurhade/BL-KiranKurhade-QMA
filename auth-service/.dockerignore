@@ -1,0 +1,13 @@
+target/
+*.class
+*.jar
+*.war
+.git/
+.gitignore
+.idea/
+.settings/
+.classpath
+.project
+*.iml
+*.log
+bin/
