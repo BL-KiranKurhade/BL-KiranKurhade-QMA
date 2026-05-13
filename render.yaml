@@ -1,0 +1,98 @@
+services:
+  # 1. Service Registry (Eureka)
+  - type: web
+    name: qma-eureka-server
+    env: docker
+    dockerContext: ./eureka-server
+    dockerfilePath: ./eureka-server/Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: JAVA_OPTS
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
+
+  # 2. Auth Service (Private)
+  - type: pserv
+    name: qma-auth-service
+    env: docker
+    dockerContext: ./auth-service
+    dockerfilePath: ./auth-service/Dockerfile
+    plan: free
+    healthCheckPath: /api/auth/health
+    envVars:
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://qma-eureka-server:8761/eureka/"
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_JWT_SECRET
+        sync: false
+
+  # 3. Conversion Service (Private)
+  - type: pserv
+    name: qma-conversion-service
+    env: docker
+    dockerContext: ./conversion-service
+    dockerfilePath: ./conversion-service/Dockerfile
+    plan: free
+    healthCheckPath: /api/convert/health
+    envVars:
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://qma-eureka-server:8761/eureka/"
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_JWT_SECRET
+        sync: false
+
+  # 4. Measurement Service (Private)
+  - type: pserv
+    name: qma-measurement-service
+    env: docker
+    dockerContext: ./measurement-service
+    dockerfilePath: ./measurement-service/Dockerfile
+    plan: free
+    healthCheckPath: /api/measurement/health
+    envVars:
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://qma-eureka-server:8761/eureka/"
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_JWT_SECRET
+        sync: false
+
+  # 5. API Gateway (Public)
+  - type: web
+    name: qma-api-gateway
+    env: docker
+    dockerContext: ./api-gateway
+    dockerfilePath: ./api-gateway/Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://qma-eureka-server:8761/eureka/"
+      - key: APP_JWT_SECRET
+        sync: false
+
+  # 6. React Frontend (Public)
+  - type: web
+    name: qma-react-frontend
+    env: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: REACT_APP_API_URL
+        value: "https://qma-api-gateway.onrender.com"

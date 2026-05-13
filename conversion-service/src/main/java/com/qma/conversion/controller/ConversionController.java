@@ -79,6 +79,20 @@ public class ConversionController {
     }
 
     @Operation(
+        summary = "Clear my conversion history",
+        description = "Deletes all past conversions for the authenticated user.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @DeleteMapping("/history")
+    public ResponseEntity<String> clearHistory(HttpServletRequest request) {
+        String username = jwtUtil.extractUsername(request);
+        List<ConversionHistory> history = historyRepo.findByUsernameOrderByCreatedAtDesc(username);
+        historyRepo.deleteAll(history);
+        return ResponseEntity.ok("History cleared for user: " + username);
+    }
+
+
+    @Operation(
         summary = "Get all conversion history (admin)",
         description = "Returns every conversion record in the database.",
         security = @SecurityRequirement(name = "bearerAuth")
