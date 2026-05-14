@@ -1,17 +1,17 @@
-# Compiled class files
+# ── Environment / Secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Maven build output ────────────────────────────────────────────────────────
+target/
 *.class
-
-# Log files
-*.log
-
-# Package files
 *.jar
 *.war
-*.nar
 *.ear
+*.nar
 
-# Maven build output
-target/
+# Maven release artifacts
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -22,68 +22,30 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# IDE - IntelliJ IDEA
+# ── IDE ───────────────────────────────────────────────────────────────────────
 .idea/
 *.iws
 *.iml
 *.ipr
-
-# IDE - Eclipse
 .project
 .classpath
 .settings/
 .factorypath
-
-# Temp / serialization
-*.ser
-*.tmp
-*.bak
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Maven build folder
-target/
-
-# Java compiled files
-*.class
-*.jar
-*.war
-*.ear
-
-# Eclipse files
-.settings/
-.classpath
-.project
-
-# IntelliJ IDEA
-.idea/
-*.iml
-
-# VS Code
 .vscode/
 
-# Logs
+# ── Logs / Temp ───────────────────────────────────────────────────────────────
 *.log
 logs/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Environment files
-.env
-.env.*
-
-# Temporary files
+*.tmp
+*.bak
+*.ser
 tmp/
 temp/
 
-# Maven wrapper (optional)
-# .mvn/
-# mvnw.cmd
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 
-# Local startup scripts
-start-microservices.ps1
-node_modules
+# ── Test / coverage ───────────────────────────────────────────────────────────
+jacoco.exec
+surefire-reports/
