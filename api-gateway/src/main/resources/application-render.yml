@@ -9,108 +9,53 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      # Enable locator but we define manual routes for precision
       discovery:
         locator:
           enabled: true
-      # ── CORS ───────────────────────────────────────────────────────────────────
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "${CORS_ALLOWED_ORIGINS:https://frontend-tql5.onrender.com}"
+              - "https://frontend-tql5.onrender.com"
             allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
+              - "*"
             allowedHeaders:
               - "*"
             allowCredentials: true
-      # ── Routes ────────────────────────────────────────
       routes:
-        # Auth Service
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**
-          filters:
-            - StripPrefix=0
-
-        # Conversion Service
         - id: conversion-service
           uri: lb://conversion-service
           predicates:
             - Path=/api/convert/**
-          filters:
-            - StripPrefix=0
-
-        # ── Swagger / API-Docs aggregation ───────────────────────────────────────
-        - id: auth-service-docs
-          uri: lb://auth-service
-          predicates:
-            - Path=/v3/api-docs/auth-service
-          filters:
-            - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
-
-        - id: conversion-service-docs
-          uri: lb://conversion-service
-          predicates:
-            - Path=/v3/api-docs/conversion-service
-          filters:
-            - RewritePath=/v3/api-docs/conversion-service, /v3/api-docs
-
-        # ── Redirect root to Swagger UI ──────────────────────────────────────────
-        - id: root-redirect
-          uri: no://op
-          predicates:
-            - Path=/
-          filters:
-            - RedirectTo=302, /swagger-ui.html
-
     discovery:
       enabled: true
     service-registry:
       auto-registration:
         enabled: true
 
-# ── Enable Eureka ──────────────────────────────────────────────────────
 eureka:
   client:
     enabled: true
     register-with-eureka: true
     fetch-registry: true
     service-url:
+      # Hardcoding the default to be safe, but still allowing override
       defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
   instance:
     prefer-ip-address: true
     hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
-    instance-id: ${spring.application.name}:${random.uuid}
+    instance-id: api-gateway:${random.uuid}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
     non-secure-port: 80
     secure-port-enabled: false
 
-# ── Actuator ──────────────────────────────────────────────────────────────────────
 management:
   endpoints:
     web:
       exposure:
         include: "health,info"
-
-# ── Swagger UI (aggregated) ───────────────────────────────────────────────────────
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-    urls:
-      - name: auth-service
-        url: /v3/api-docs/auth-service
-      - name: conversion-service
-        url: /v3/api-docs/conversion-service
-    operationsSorter: method
-    tagsSorter: alpha
-    try-it-out-enabled: true
-    display-request-duration: true
