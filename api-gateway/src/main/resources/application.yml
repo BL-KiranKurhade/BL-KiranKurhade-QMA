@@ -69,7 +69,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URI:https://eureka-server-u2c0.onrender.com/eureka/}
+      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
     fetch-registry: true
     register-with-eureka: true
     eureka-server-connect-timeout-seconds: 5
