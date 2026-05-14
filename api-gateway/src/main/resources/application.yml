@@ -77,6 +77,7 @@ eureka:
     initial-instance-info-replication-interval-seconds: 5
   instance:
     prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.uuid}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
 

@@ -80,6 +80,19 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:https://eureka-server-u2c0.onrender.com/eureka/}
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.uuid}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+spring:
+  cloud:
+    discovery:
+      enabled: true
+    service-registry:
+      auto-registration:
+        enabled: true
 
 # ── Actuator ──────────────────────────────────────────────────────────────────────
 management:
