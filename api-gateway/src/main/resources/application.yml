@@ -58,6 +58,14 @@ spring:
           filters:
             - RewritePath=/v3/api-docs/conversion-service, /v3/api-docs
 
+        # ── Redirect root to Swagger UI ──────────────────────────────────────────
+        - id: root-redirect
+          uri: no://op
+          predicates:
+            - Path=/
+          filters:
+            - RedirectTo=302, /swagger-ui.html
+
 eureka:
   client:
     service-url:
