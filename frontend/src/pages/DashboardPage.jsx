@@ -171,9 +171,9 @@ export default function DashboardPage() {
     setToResult(null); setAResult(null); setAError('');
   }, [category]);
 
-  // ── Auto-calculate for Comparison tab (instant local + debounced backend save) ─
+  // ── Auto-calculate for Comparison & Conversion tabs (instant local + debounced backend save) ─
   useEffect(() => {
-    if (action !== 'Comparison') return;
+    if (action !== 'Comparison' && action !== 'Conversion') return;
     if (!fromVal || isNaN(+fromVal)) { setToResult(null); return; }
 
     // Instant local result
@@ -201,7 +201,7 @@ export default function DashboardPage() {
   };
 
   // ── Arithmetic calculate ──────────────────────────────────────────────────────
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     setAError(''); setAResult(null);
     const v1 = parseFloat(aVal1), v2 = parseFloat(aVal2);
     if (isNaN(v1) || isNaN(v2)) { setAError('Enter valid numbers in both fields'); return; }
@@ -217,6 +217,17 @@ export default function DashboardPage() {
       res = fromBase(baseRes, aResUnit, category);
     }
     setAResult(parseFloat(res.toFixed(6)));
+
+    // Save to backend history and refresh for unit-aware operations
+    try {
+      if (aOp === '+' || aOp === '-') {
+        await conversionApi.convert(aVal1, aUnit1, aResUnit, category);
+      } else {
+        // For scalar *, / — save value1 in its own unit (records the category/unit)
+        await conversionApi.convert(aVal1, aUnit1, aUnit1, category);
+      }
+    } catch { /* silent — backend may be down */ }
+    fetchHistory();
   };
 
   // ── Derived data ──────────────────────────────────────────────────────────────

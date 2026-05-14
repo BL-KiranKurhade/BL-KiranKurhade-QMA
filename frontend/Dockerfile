@@ -36,6 +36,10 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built React app from builder
 COPY --from=builder /app/build /usr/share/nginx/html
 
+# Copy startup script (injects API_GATEWAY_HOST at runtime)
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 # Expose HTTP port
 EXPOSE 80
 
@@ -43,4 +47,6 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget -qO- http://localhost:80/ || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+# start.sh replaces the baked-in localhost API URL with the real
+# gateway URL ($API_GATEWAY_HOST), then launches nginx.
+CMD ["/start.sh"]

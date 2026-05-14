@@ -1,0 +1,95 @@
+# ── API Gateway — Render production profile ───────────────────────────────────
+# Activated when SPRING_PROFILES_ACTIVE=render
+#
+# Key differences from default profile:
+#   - Eureka disabled; routes use direct HTTPS URLs (AUTH_SERVICE_URL, etc.)
+#   - CORS allowedOrigins set from CORS_ALLOWED_ORIGINS env var
+#   - PORT driven by Render's injected PORT env var
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  cloud:
+    gateway:
+      # Disable Eureka-based service discovery locator
+      discovery:
+        locator:
+          enabled: false
+      # ── CORS ───────────────────────────────────────────────────────────────────
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "${CORS_ALLOWED_ORIGINS:http://localhost:3000}"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      # ── Routes (direct URLs — no lb://) ────────────────────────────────────────
+      routes:
+        # Auth Service
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+
+        # Conversion Service
+        - id: conversion-service
+          uri: ${CONVERSION_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/convert/**
+          filters:
+            - StripPrefix=0
+
+        # ── Swagger / API-Docs aggregation ───────────────────────────────────────
+        - id: auth-service-docs
+          uri: ${AUTH_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/v3/api-docs/auth-service
+          filters:
+            - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
+
+        - id: conversion-service-docs
+          uri: ${CONVERSION_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/v3/api-docs/conversion-service
+          filters:
+            - RewritePath=/v3/api-docs/conversion-service, /v3/api-docs
+
+# ── Disable Eureka entirely ──────────────────────────────────────────────────────
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+# ── Actuator ──────────────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+# ── Swagger UI (aggregated) ───────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth-service
+      - name: conversion-service
+        url: /v3/api-docs/conversion-service
+    operationsSorter: method
+    tagsSorter: alpha
+    try-it-out-enabled: true
+    display-request-duration: true

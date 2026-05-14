@@ -28,6 +28,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
 
+  // ── Friendly error helper ──────────────────────────────────────────────────
+  const friendlyError = (e, fallback) => {
+    const status = e.response?.status;
+    // 503 = API Gateway can't find the service in Eureka (service not started yet)
+    if (status === 503) {
+      return 'Auth service is starting up. Please wait a few seconds and try again.';
+    }
+    // 0 / network error = backend is completely unreachable
+    if (!e.response) {
+      return 'Cannot reach the server. Make sure all services are running.';
+    }
+    // Extract message from either { message } or { error } in the response body
+    const body = e.response?.data;
+    return body?.message || body?.error || fallback;
+  };
+
   // ── Register ───────────────────────────────────────────────────────────────
 
   const register = useCallback(async (username, email, password) => {
@@ -43,7 +59,7 @@ export function AuthProvider({ children }) {
       setError(data.message);
       return { success: false, message: data.message };
     } catch (e) {
-      const msg = e.response?.data?.message || 'Registration failed. Please try again.';
+      const msg = friendlyError(e, 'Registration failed. Please try again.');
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -66,7 +82,7 @@ export function AuthProvider({ children }) {
       setError(data.message);
       return { success: false, message: data.message };
     } catch (e) {
-      const msg = e.response?.data?.message || 'Login failed. Check your credentials.';
+      const msg = friendlyError(e, 'Login failed. Check your credentials.');
       setError(msg);
       return { success: false, message: msg };
     } finally {

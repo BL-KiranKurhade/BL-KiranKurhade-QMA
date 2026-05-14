@@ -3,29 +3,25 @@ import {
   Card, CardContent, Typography, List, ListItem, ListItemText,
   Button, Divider, Box, Chip,
 } from '@mui/material';
-import { measurementApi } from '../services/api';  // fixed: was MeasurementService (did not exist)
+import { conversionApi } from '../services/api';
 
 /**
- * UC20 — Measurement History component (uses measurementApi from services/api.js).
- * Demonstrates: States and Lifecycle, Axios, Rendering, Async.
+ * Conversion History component — shows the authenticated user's past conversions.
+ * Uses conversionApi.getHistory() → GET /api/convert/history (conversion-service).
  */
 export default function HistoryPage() {
-  const [measurements, setMeasurements] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [history, setHistory]   = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
 
   const load = async () => {
     setLoading(true); setError('');
     try {
-      const { data } = await measurementApi.getAll();
-      setMeasurements(Array.isArray(data) ? data : data.content || []);
+      const { data } = await conversionApi.getHistory();
+      setHistory(Array.isArray(data) ? data : data.content || []);
     } catch (e) {
-      setError('Could not reach the API — showing demo data');
-      setMeasurements([
-        { id: 1, value: 1.0,  unit: 'ft',  category: 'LENGTH' },
-        { id: 2, value: 500,  unit: 'g',   category: 'WEIGHT' },
-        { id: 3, value: 2.5,  unit: 'l',   category: 'VOLUME' },
-      ]);
+      setError('Could not load history — please make sure you are logged in and the server is running.');
+      setHistory([]);
     } finally {
       setLoading(false);
     }
@@ -33,51 +29,61 @@ export default function HistoryPage() {
 
   useEffect(() => { load(); }, []);
 
-  const handleDelete = async (id) => {
+  const handleClearAll = async () => {
     try {
-      await measurementApi.delete(id);
-      setMeasurements(prev => prev.filter(m => m.id !== id));
+      await conversionApi.clearHistory();
+      setHistory([]);
     } catch {
-      setMeasurements(prev => prev.filter(m => m.id !== id));
+      setError('Failed to clear history.');
     }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleString();
   };
 
   return (
     <Card elevation={3}>
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h5" fontWeight={700}>Measurement History</Typography>
-          <Button variant="outlined" onClick={load} disabled={loading}>
-            {loading ? 'Loading…' : 'Refresh'}
-          </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" fontWeight={700}>Conversion History</Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="outlined" onClick={load} disabled={loading}>
+              {loading ? 'Loading…' : 'Refresh'}
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleClearAll} disabled={loading || history.length === 0}>
+              Clear All
+            </Button>
+          </Box>
         </Box>
+
         {error && <Typography color="error" mb={2}>{error}</Typography>}
+
         <List>
-          {measurements.map((m, i) => (
-            <React.Fragment key={m.id}>
-              <ListItem
-                secondaryAction={
-                  <Button size="small" color="error" onClick={() => handleDelete(m.id)}>
-                    Delete
-                  </Button>
-                }
-              >
+          {history.map((h, i) => (
+            <React.Fragment key={h.id}>
+              <ListItem>
                 <ListItemText
                   primary={
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                      <Typography fontWeight={600}>{m.value}</Typography>
-                      <Chip label={m.unit} size="small" variant="outlined" />
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <Typography fontWeight={600}>{h.fromValue}</Typography>
+                      <Chip label={h.fromUnit} size="small" variant="outlined" />
+                      <Typography>→</Typography>
+                      <Typography fontWeight={600}>{h.result !== undefined ? Number(h.result).toFixed(4) : ''}</Typography>
+                      <Chip label={h.toUnit} size="small" color="primary" variant="outlined" />
+                      <Chip label={h.category} size="small" />
                     </Box>
                   }
-                  secondary={m.category}
+                  secondary={formatDate(h.createdAt)}
                 />
               </ListItem>
-              {i < measurements.length - 1 && <Divider />}
+              {i < history.length - 1 && <Divider />}
             </React.Fragment>
           ))}
-          {measurements.length === 0 && !loading && (
+          {history.length === 0 && !loading && (
             <ListItem>
-              <ListItemText primary="No measurements found." />
+              <ListItemText primary="No conversion history found. Try converting some units first!" />
             </ListItem>
           )}
         </List>
