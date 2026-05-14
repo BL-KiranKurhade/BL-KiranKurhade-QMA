@@ -33,11 +33,11 @@ EXPOSE 8083
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
 ENV SPRING_PROFILES_ACTIVE=docker
 ENV EUREKA_URI=http://eureka-server:8761/eureka/
-ENV MYSQL_HOST=mysql
-ENV MYSQL_PORT=3306
-ENV MYSQL_DATABASE=qma_auth
-ENV MYSQL_USER=root
-ENV MYSQL_PASSWORD=root
+ENV MYSQL_HOST=mysql-2cee1feb-qma-database.h.aivencloud.com
+ENV MYSQL_PORT=24566
+ENV MYSQL_DATABASE=defaultdb
+ENV MYSQL_USER=avnadmin
+ENV MYSQL_PASSWORD=AVNS_BBXDphsKwwauXsNRdSu
 ENV JWT_SECRET=QMAAuthServiceSecretKey2024ForJWTTokenSigningMustBe256BitsLong
 ENV JWT_EXPIRATION=86400000
 ENV CORS_ALLOWED_ORIGINS=http://localhost:3000
