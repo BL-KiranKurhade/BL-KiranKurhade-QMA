@@ -43,8 +43,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      # Hardcoding the default to be safe, but still allowing override
-      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
+      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka}
   instance:
     prefer-ip-address: true
     hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
