@@ -31,11 +31,11 @@ spring:
             allowedHeaders:
               - "*"
             allowCredentials: true
-      # ── Routes (direct URLs — no lb://) ────────────────────────────────────────
+      # ── Routes ────────────────────────────────────────
       routes:
         # Auth Service
         - id: auth-service
-          uri: ${AUTH_SERVICE_URL:http://localhost:8083}
+          uri: lb://auth-service
           predicates:
             - Path=/api/auth/**
           filters:
@@ -43,7 +43,7 @@ spring:
 
         # Conversion Service
         - id: conversion-service
-          uri: ${CONVERSION_SERVICE_URL:http://localhost:8082}
+          uri: lb://conversion-service
           predicates:
             - Path=/api/convert/**
           filters:
@@ -51,25 +51,27 @@ spring:
 
         # ── Swagger / API-Docs aggregation ───────────────────────────────────────
         - id: auth-service-docs
-          uri: ${AUTH_SERVICE_URL:http://localhost:8083}
+          uri: lb://auth-service
           predicates:
             - Path=/v3/api-docs/auth-service
           filters:
             - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
 
         - id: conversion-service-docs
-          uri: ${CONVERSION_SERVICE_URL:http://localhost:8082}
+          uri: lb://conversion-service
           predicates:
             - Path=/v3/api-docs/conversion-service
           filters:
             - RewritePath=/v3/api-docs/conversion-service, /v3/api-docs
 
-# ── Disable Eureka entirely ──────────────────────────────────────────────────────
+# ── Enable Eureka ──────────────────────────────────────────────────────
 eureka:
   client:
-    enabled: false
-    register-with-eureka: false
-    fetch-registry: false
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:https://eureka-server-u2c0.onrender.com/eureka/}
 
 # ── Actuator ──────────────────────────────────────────────────────────────────────
 management:
