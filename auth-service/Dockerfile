@@ -31,7 +31,7 @@ EXPOSE 8083
 
 # Runtime environment variables (overridden by docker-compose)
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-ENV SPRING_PROFILES_ACTIVE=docker
+ENV SPRING_PROFILES_ACTIVE=render
 ENV EUREKA_URI=http://eureka-server:8761/eureka/
 ENV MYSQL_HOST=mysql-2cee1feb-qma-database.h.aivencloud.com
 ENV MYSQL_PORT=24566

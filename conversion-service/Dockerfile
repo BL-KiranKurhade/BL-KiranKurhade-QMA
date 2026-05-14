@@ -30,7 +30,7 @@ COPY --from=builder /app/target/conversion-service-*.jar app.jar
 EXPOSE 8082
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-ENV SPRING_PROFILES_ACTIVE=docker
+ENV SPRING_PROFILES_ACTIVE=render
 ENV EUREKA_URI=http://eureka-server:8761/eureka/
 ENV MYSQL_HOST=mysql
 ENV MYSQL_PORT=3306

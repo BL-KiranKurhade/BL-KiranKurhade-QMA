@@ -34,7 +34,7 @@ COPY --from=builder /app/target/api-gateway-*.jar app.jar
 EXPOSE 8080
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-ENV SPRING_PROFILES_ACTIVE=docker
+ENV SPRING_PROFILES_ACTIVE=render
 
 # Note: EUREKA_URI and CORS_ALLOWED_ORIGINS must be set as environment variables in Render
 # ENV EUREKA_URI=
