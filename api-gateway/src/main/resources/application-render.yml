@@ -87,9 +87,12 @@ eureka:
       defaultZone: ${EUREKA_URI:https://eureka-server-u2c0.onrender.com/eureka/}
   instance:
     prefer-ip-address: true
+    hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${random.uuid}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
+    non-secure-port: 80
+    secure-port-enabled: false
 
 
 # ── Actuator ──────────────────────────────────────────────────────────────────────
