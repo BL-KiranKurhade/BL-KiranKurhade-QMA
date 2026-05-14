@@ -16,6 +16,11 @@ spring:
       discovery:
         locator:
           enabled: false
+    discovery:
+      enabled: true
+    service-registry:
+      auto-registration:
+        enabled: true
       # ── CORS ───────────────────────────────────────────────────────────────────
       globalcors:
         corsConfigurations:
@@ -86,13 +91,6 @@ eureka:
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
 
-spring:
-  cloud:
-    discovery:
-      enabled: true
-    service-registry:
-      auto-registration:
-        enabled: true
 
 # ── Actuator ──────────────────────────────────────────────────────────────────────
 management:
