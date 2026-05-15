@@ -37,6 +37,8 @@ services:
         value: 8761
       - key: EUREKA_SERVER_URL
         value: https://eureka-server-u2c0.onrender.com/eureka
+      - key: EUREKA_INSTANCE_HOSTNAME
+        value: eureka-server-u2c0.onrender.com
 
   # ── Auth Service ────────────────────────────────────────────
   - type: web
@@ -49,14 +51,18 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: render
-      # Aiven MySQL password — mark as secret in dashboard
+      - key: DB_URL
+        value: jdbc:mysql://mysql-2cee1feb-qma-database.h.aivencloud.com:24566/defaultdb?sslMode=REQUIRED
+      - key: DB_USERNAME
+        value: avnadmin
       - key: DB_PASSWORD
         sync: false
-      # JWT secret — must match conversion-service and gateway
       - key: JWT_SECRET
         sync: false
       - key: EUREKA_SERVER_URL
         value: https://eureka-server-u2c0.onrender.com/eureka
+      - key: RENDER_EXTERNAL_HOSTNAME
+        value: qma-auth.onrender.com
 
   # ── Conversion Service ──────────────────────────────────────
   - type: web
@@ -69,16 +75,20 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: render
+      - key: DB_URL
+        value: jdbc:mysql://mysql-2cee1feb-qma-database.h.aivencloud.com:24566/defaultdb?sslMode=REQUIRED
+      - key: DB_USERNAME
+        value: avnadmin
       - key: DB_PASSWORD
         sync: false
       - key: JWT_SECRET
         sync: false
       - key: EUREKA_SERVER_URL
         value: https://eureka-server-u2c0.onrender.com/eureka
+      - key: RENDER_EXTERNAL_HOSTNAME
+        value: qma-conversion.onrender.com
 
   # ── API Gateway ─────────────────────────────────────────────
-  # Single public entry-point. Routes to auth + conversion via
-  # direct HTTPS URLs (no Eureka required on Render).
   - type: web
     name: qma-gateway
     runtime: docker
@@ -91,13 +101,12 @@ services:
         value: render
       - key: EUREKA_SERVER_URL
         value: https://eureka-server-u2c0.onrender.com/eureka
-      # CORS: set to your frontend's Render URL
+      - key: RENDER_EXTERNAL_HOSTNAME
+        value: bl-kirankurhade-qma-32wf.onrender.com
       - key: CORS_ALLOWED_ORIGINS
         value: https://eureka-server-u2c0.onrender.com,https://frontend-tql5.onrender.com
 
   # ── React Frontend ──────────────────────────────────────────
-  # Built with nginx. start.sh injects the gateway URL at
-  # container start-up (replaces the baked-in localhost placeholder).
   - type: web
     name: qma-frontend
     runtime: docker
@@ -105,6 +114,5 @@ services:
     dockerContext: ./frontend
     plan: free
     envVars:
-      # Just the hostname — start.sh prepends https://
       - key: API_GATEWAY_HOST
         value: bl-kirankurhade-qma-32wf.onrender.com
