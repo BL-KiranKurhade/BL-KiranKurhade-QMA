@@ -24,8 +24,9 @@ public class OpenAPIConfig {
                     "3. Click Authorize → paste Bearer token")
                 .version("1.0.0"))
             .servers(List.of(
-                new Server().url("http://localhost:8083").description("Direct"),
-                new Server().url("http://localhost:8080").description("Via API Gateway")
+                new Server().url("https://bl-kirankurhade-qma-32wf.onrender.com").description("API Gateway (Production)"),
+                new Server().url("http://localhost:8080").description("API Gateway (Local)"),
+                new Server().url("http://localhost:8083").description("Direct (Local)")
             ))
             .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
             .components(new Components()

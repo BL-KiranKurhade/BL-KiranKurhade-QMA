@@ -40,8 +40,9 @@ public class OpenAPIConfig {
                 )
                 .version("1.0.0"))
             .servers(List.of(
-                new Server().url("http://localhost:8082").description("Direct (port 8082)"),
-                new Server().url("http://localhost:8080").description("Via API Gateway (port 8080)")
+                new Server().url("https://bl-kirankurhade-qma-32wf.onrender.com").description("API Gateway (Production)"),
+                new Server().url("http://localhost:8080").description("API Gateway (Local)"),
+                new Server().url("http://localhost:8082").description("Direct (Local)")
             ))
             .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
             .components(new Components()
