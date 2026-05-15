@@ -68,6 +68,7 @@ spring:
 
 eureka:
   client:
+    enabled: true
     service-url:
       defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka}
     fetch-registry: true
