@@ -7,7 +7,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>com.qma</groupId>
@@ -29,13 +29,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-          <!-- In your pom.xml -->
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-    <version>2.5.0</version> <!-- Use the latest 2.x version -->
-</dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -45,33 +38,32 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
-        <!-- Eureka Client -->
+
+        <!-- Eureka Client for service discovery -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-        <!-- Load Balancer (Required for lb:// routes in Spring Cloud Gateway) -->
+
+        <!-- Load Balancer (Required for lb:// routes) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
-        <!-- Actuator -->
+
+        <!-- Actuator for health checks -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- Swagger WebFlux (Gateway is reactive) -->
+
+        <!-- Swagger/OpenAPI for WebFlux (Gateway is reactive, NOT servlet) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>2.3.0</version>
         </dependency>
-        <!-- Hot-reload -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
