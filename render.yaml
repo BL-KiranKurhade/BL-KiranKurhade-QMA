@@ -101,8 +101,12 @@ services:
         value: https://eureka-server-u2c0.onrender.com/eureka
       - key: RENDER_EXTERNAL_HOSTNAME
         value: bl-kirankurhade-qma-32wf.onrender.com
+      - key: AUTH_SERVICE_URL
+        value: https://qma-auth.onrender.com
+      - key: CONVERSION_SERVICE_URL
+        value: https://qma-conversion.onrender.com
       - key: CORS_ALLOWED_ORIGINS
-        value: https://eureka-server-u2c0.onrender.com,https://frontend-tql5.onrender.com
+        value: https://frontend-tql5.onrender.com,http://localhost:3000
 
   # ── React Frontend ──────────────────────────────────────────
   - type: web
