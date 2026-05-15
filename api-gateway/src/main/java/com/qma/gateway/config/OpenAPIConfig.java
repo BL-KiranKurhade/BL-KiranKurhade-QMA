@@ -52,7 +52,7 @@ public class OpenAPIConfig {
                 )
                 .version("1.0.0"))
             .servers(List.of(
-                new Server().url("http://localhost:8080").description("API Gateway (port 8080)")
+                new Server().url("/").description("API Gateway (Relative)")
             ))
             .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
             .components(new Components()

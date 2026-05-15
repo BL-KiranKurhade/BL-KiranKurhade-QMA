@@ -3,6 +3,12 @@ package com.qma.gateway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import java.net.URI;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 
 /**
  * UC21 — API Gateway (Spring Cloud Gateway / WebFlux reactive)
@@ -18,6 +24,17 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 public class ApiGatewayApplication {
+
+    /**
+     * Permanent fix for the 404 at root path.
+     * Redirects the root (/) to /swagger-ui.html
+     */
+    @Bean
+    public RouterFunction<ServerResponse> routerFunction() {
+        return RouterFunctions.route(GET("/"), req ->
+                ServerResponse.temporaryRedirect(URI.create("/swagger-ui.html")).build()
+        );
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(ApiGatewayApplication.class, args);

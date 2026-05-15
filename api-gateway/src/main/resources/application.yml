@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: api-gateway
+    name: API-GATEWAY
   config:
     import: optional:file:.env[.properties]
   cloud:
@@ -69,13 +69,13 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
+      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka}
     fetch-registry: true
     register-with-eureka: true
     eureka-server-connect-timeout-seconds: 10
     eureka-server-read-timeout-seconds: 10
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
     hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
     instance-id: api-gateway:${random.uuid}
     lease-renewal-interval-in-seconds: 10
