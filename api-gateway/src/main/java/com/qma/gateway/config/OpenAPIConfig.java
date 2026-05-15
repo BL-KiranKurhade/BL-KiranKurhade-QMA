@@ -37,7 +37,6 @@ public class OpenAPIConfig {
                     "**UC21 Microservices** — All APIs accessible through the API Gateway.\n\n" +
                     "**Services available (use dropdown top-right):**\n" +
                     "- `auth-service` — Register / Login / JWT token\n" +
-                    "- `measurement-service` — CRUD for quantity measurements\n" +
                     "- `conversion-service` — Unit conversions (LENGTH, WEIGHT, VOLUME, TEMPERATURE)\n\n" +
                     "**How to authenticate:**\n" +
                     "1. Select **auth-service** in the dropdown\n" +
@@ -46,7 +45,6 @@ public class OpenAPIConfig {
                     "4. Switch to any other service — all endpoints are now unlocked\n\n" +
                     "**Direct service URLs:**\n" +
                     "- Auth Service: `http://localhost:8083`\n" +
-                    "- Measurement Service: `http://localhost:8084`\n" +
                     "- Conversion Service: `http://localhost:8082`\n" +
                     "- Eureka Dashboard: `http://localhost:8761`"
                 )
