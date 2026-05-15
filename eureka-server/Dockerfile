@@ -35,10 +35,7 @@ COPY --from=builder /app/target/eureka-server-*.jar app.jar
 # Expose Eureka dashboard + registry port
 EXPOSE 8761
 
-# JVM tuning for containers
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8761}/actuator/health || exit 1
+# JVM tuning for containers - Increased memory for stability
+ENV JAVA_OPTS="-XX:+UseContainerSupport -Xmx384m -Xms128m -Djava.security.egd=file:/dev/./urandom"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
