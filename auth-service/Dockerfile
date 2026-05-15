@@ -1,6 +1,5 @@
 # ================================================================
-# Auth Service  |  Port 8083
-# Handles JWT registration, login, and user management
+# Auth Service  |  Binds to $PORT (injected by Render at runtime)
 # Multi-stage build: Maven builder -> JRE runtime
 # ================================================================
 
@@ -29,20 +28,11 @@ COPY --from=builder /app/target/auth-service-*.jar app.jar
 
 EXPOSE 8083
 
-# Runtime environment variables (overridden by docker-compose)
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
+# All secrets are injected by Render at runtime — nothing hardcoded here
+ENV JAVA_OPTS="-XX:+UseContainerSupport -Xmx384m -Xms128m -Djava.security.egd=file:/dev/./urandom"
 ENV SPRING_PROFILES_ACTIVE=render
-ENV EUREKA_URI=http://eureka-server:8761/eureka/
-ENV MYSQL_HOST=mysql-2cee1feb-qma-database.h.aivencloud.com
-ENV MYSQL_PORT=24566
-ENV MYSQL_DATABASE=defaultdb
-ENV MYSQL_USER=avnadmin
-ENV MYSQL_PASSWORD=AVNS_BBXDphsKwwauXsNRdSu
-ENV JWT_SECRET=QMAAuthServiceSecretKey2024ForJWTTokenSigningMustBe256BitsLong
-ENV JWT_EXPIRATION=86400000
-ENV CORS_ALLOWED_ORIGINS=http://localhost:3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
-    CMD curl -f http://localhost:8083/actuator/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8083}/actuator/health || exit 1
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
