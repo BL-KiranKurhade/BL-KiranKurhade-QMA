@@ -72,14 +72,16 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
     fetch-registry: true
     register-with-eureka: true
-    eureka-server-connect-timeout-seconds: 5
-    eureka-server-read-timeout-seconds: 5
-    initial-instance-info-replication-interval-seconds: 5
+    eureka-server-connect-timeout-seconds: 10
+    eureka-server-read-timeout-seconds: 10
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${random.uuid}
+    hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
+    instance-id: api-gateway:${random.uuid}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
+    non-secure-port: 80
+    secure-port-enabled: false
 
 management:
   endpoints:
