@@ -35,8 +35,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     /** Paths that must never require a JWT — filter is skipped entirely. */
     private static final List<String> PUBLIC_PATHS = List.of(
         "/api/auth/register",
+        "/api/auth/register/**",
         "/api/auth/login",
+        "/api/auth/login/**",
         "/api/auth/health",
+        "/api/auth/health/**",
+        "/v3/api-docs",
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html",
@@ -51,9 +55,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
+        String servletPath = request.getServletPath();
+        String requestURI = request.getRequestURI();
         return PUBLIC_PATHS.stream()
-            .anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
+            .anyMatch(pattern -> PATH_MATCHER.match(pattern, servletPath) || PATH_MATCHER.match(pattern, requestURI));
     }
 
     @Override

@@ -3,11 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QMA - Quantity Measurement App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#4361EE" />
+
+    <!-- SEO -->
+    <title>QMA — Quantity Measurement App</title>
+    <meta
+      name="description"
+      content="Quantity Measurement App — convert, manage and track quantity measurements with ease."
+    />
+
+    <!-- Favicon (inline SVG as data-URI so no extra file is needed) -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234361EE'/><text y='.9em' font-size='72' x='50%25' text-anchor='middle' dominant-baseline='middle' dy='0.1em' fill='white'>Q</text></svg>"
+    />
+
+    <!-- Google Fonts: Inter + Roboto (used by App.jsx theme) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Baseline reset so MUI CssBaseline starts clean -->
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #EEF0F8;
+        font-family: 'Inter', 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Minimal loading splash shown until React hydrates */
+      #root:empty::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #EEF0F8;
+      }
+    </style>
   </head>
+
   <body>
+    <noscript>
+      You need to enable JavaScript to run the QMA application.
+    </noscript>
+
+    <!-- React mounts here — matches ReactDOM.createRoot(document.getElementById('root')) -->
     <div id="root"></div>
   </body>
 </html>

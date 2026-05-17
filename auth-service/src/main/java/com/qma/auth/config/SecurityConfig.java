@@ -100,11 +100,18 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Always allow CORS pre-flight requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Auth endpoints are open — method-specific to prevent bypass
-                .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/auth/health").permitAll()
+                // Auth endpoints are open
+                .requestMatchers(
+                    "/api/auth/register",
+                    "/api/auth/register/**",
+                    "/api/auth/login",
+                    "/api/auth/login/**",
+                    "/api/auth/health",
+                    "/api/auth/health/**"
+                ).permitAll()
                 // Docs & monitoring
                 .requestMatchers(
+                    "/v3/api-docs",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
