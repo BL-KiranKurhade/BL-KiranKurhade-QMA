@@ -104,3 +104,7 @@ surefire-reports/
 
 # ── Local startup / helper scripts (machine-specific) ────────────────────────
 start-microservices.ps1
+kill-ports.bat
+kill-ports.ps1
+start-dev.bat
+
