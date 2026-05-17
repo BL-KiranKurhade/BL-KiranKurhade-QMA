@@ -33,3 +33,8 @@ start-all
 start-dev
 stop-dev
 
+kill-ports.bat
+kill-ports.ps1
+start-dev.bat
+run.bat
+**/run.bat
