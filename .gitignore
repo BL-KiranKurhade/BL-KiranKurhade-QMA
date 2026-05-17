@@ -110,3 +110,11 @@ start-dev.bat
 run.bat
 **/run.bat
 
+# ── Local run/demo files (RunUC*) ────────────────────────────────────────────
+RunUC*
+RunUC*.java
+RunUC*.class
+**/RunUC*
+**/RunUC*.java
+**/RunUC*.class
+
