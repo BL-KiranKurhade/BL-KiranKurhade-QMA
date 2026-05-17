@@ -80,6 +80,8 @@ Every developmental milestone is cataloged as a distinct, production-grade imple
 | **`UC15`** | **N-Tier Architecture:** Migrating to standard controller-service-repository patterns. |
 | **`UC16`** | **Database Integration:** Introducing persistent storage using JDBC. |
 | **`UC17`** | **Spring Boot Migration:** Restructuring the application as a Spring Boot web app. |
+| **`UC18`** | **Spring Security & JWT:** Implementing secure stateless token authentication and user persistence. |
+| **`UC19`** | **HTML/CSS/JS Frontend:** Developing the classic client web interface integrated with the REST API. |
 | **`UC20`** | **React Frontend Integration:** Launching the interactive visual frontend. |
 | **`UC21`** | **Microservices Architecture:** Factoring services into isolated Dockerized clusters. |
 
