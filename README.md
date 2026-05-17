@@ -134,4 +134,4 @@ All endpoint communications (except Swagger UI and authentication routes) are fu
 ---
 
 ## 👥 Authors & Contributors
-* **Lead Engineer:** BL-KiranKurhade ([kirankurhade-hub](https://github.com/kirankurhade-hub))
+* **Software Engineer:** BL-KiranKurhade ([kirankurhade-hub](https://github.com/kirankurhade-hub))
