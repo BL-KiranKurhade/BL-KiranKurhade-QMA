@@ -12,6 +12,9 @@
 # ============================================================
 set -e
 
+# Fallback to the production gateway hostname if the environment variable is not set on Render
+API_GATEWAY_HOST=${API_GATEWAY_HOST:-bl-kirankurhade-qma-32wf.onrender.com}
+
 if [ -n "$API_GATEWAY_HOST" ]; then
     API_URL="https://$API_GATEWAY_HOST"
     echo "[start.sh] Injecting API URL into JS: $API_URL"
