@@ -49,3 +49,8 @@ temp/
 
 # misc
 *.pem
+kill-ports.bat
+kill-ports.ps1
+start-dev.bat
+run.bat
+**/run.bat
