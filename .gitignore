@@ -94,3 +94,8 @@ temp/
 # .mvn/
 # mvnw
 # mvnw.cmd
+kill-ports.bat
+kill-ports.ps1
+start-dev.bat
+run.bat
+**/run.bat
