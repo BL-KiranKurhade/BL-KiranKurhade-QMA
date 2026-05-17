@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// All traffic goes through the API Gateway at port 8080 via CRA proxy
-const API_BASE = process.env.REACT_APP_API_URL || '';
+// All traffic goes through the API Gateway.
+// Local dev uses http://localhost:8080 from local .env; production falls back to the public gateway URL.
+const API_BASE = process.env.REACT_APP_API_URL || 'https://bl-kirankurhade-qma-32wf.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -39,15 +40,15 @@ api.interceptors.response.use(
 // ── Auth Service  (routed through Gateway → auth-service:8083) ────────────────
 export const authApi = {
   register: (data) => api.post('/api/auth/register', data),
-  login:    (data) => api.post('/api/auth/login',    data),
-  me:       ()     => api.get('/api/auth/me'),
+  login: (data) => api.post('/api/auth/login', data),
+  me: () => api.get('/api/auth/me'),
 };
 
 // ── Conversion Service  (routed through Gateway → conversion-service:8082) ────
 export const conversionApi = {
-  convert:      (value, from, to, category) =>
+  convert: (value, from, to, category) =>
     api.get('/api/convert', { params: { value, from, to, category } }),
-  getHistory:   () => api.get('/api/convert/history'),
+  getHistory: () => api.get('/api/convert/history'),
   getAllHistory: () => api.get('/api/convert/history/all'),
   clearHistory: () => api.delete('/api/convert/history'),
 };

@@ -67,9 +67,9 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka}
-    fetch-registry: true
-    register-with-eureka: true
+      defaultZone: https://eureka-server-u2c0.onrender.com/eureka/
+    fetch-registry: false
+    register-with-eureka: false
   instance:
     prefer-ip-address: false
     hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
