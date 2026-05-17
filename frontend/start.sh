@@ -14,15 +14,19 @@ set -e
 
 if [ -n "$API_GATEWAY_HOST" ]; then
     API_URL="https://$API_GATEWAY_HOST"
-    echo "[start.sh] Injecting API URL: $API_URL"
+    echo "[start.sh] Injecting API URL into JS: $API_URL"
 
-    # Replace the build-time placeholder in every compiled JS chunk
+    # Replace the build-time placeholder in every compiled JS chunk (fallback)
     find /usr/share/nginx/html/static/js -type f -name "*.js" \
         -exec sed -i "s|http://localhost:8080|$API_URL|g" {} \;
 
-    echo "[start.sh] API URL injection complete."
+    echo "[start.sh] Injecting API Gateway Host into Nginx Config: $API_GATEWAY_HOST"
+    # Replace the Nginx proxy_pass placeholder
+    sed -i "s|API_GATEWAY_HOST|$API_GATEWAY_HOST|g" /etc/nginx/conf.d/default.conf
+
+    echo "[start.sh] Runtime injections complete."
 else
-    echo "[start.sh] API_GATEWAY_HOST not set — using baked-in URL (http://localhost:8080)."
+    echo "[start.sh] API_GATEWAY_HOST not set — using local defaults."
 fi
 
 exec nginx -g 'daemon off;'
