@@ -1,17 +1,24 @@
-# Compiled class files
+# ══════════════════════════════════════════════════════════════════════════════
+#  QMA — Quantity Measurement App  |  Root .gitignore
+#  Covers: Java/Spring Boot microservices + React frontend (monorepo)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Environment / Secrets ─────────────────────────────────────────────────────
+# NEVER commit .env files — they contain credentials and service URLs.
+# Each service ships a .env.example as a safe template instead.
+.env
+.env.*
+!.env.example
+
+# ── Java / Maven build output ─────────────────────────────────────────────────
+target/
 *.class
-
-# Log files
-*.log
-
-# Package files
 *.jar
 *.war
-*.nar
 *.ear
+*.nar
 
-# Maven build output
-target/
+# Maven release / versioning artifacts
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -19,68 +26,95 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+
+# Maven wrapper binaries (keep scripts, drop the jar)
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# IDE - IntelliJ IDEA
+# ── Node / React / Frontend build output ──────────────────────────────────────
+node_modules/
+build/
+dist/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+
+# Create React App / Vite test coverage
+coverage/
+
+# npm / yarn lockfiles generated on CI (keep the one your team commits)
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+package-lock.json.bak
+
+# ── IDE — IntelliJ IDEA / Android Studio ──────────────────────────────────────
 .idea/
 *.iws
 *.iml
 *.ipr
+out/
 
-# IDE - Eclipse
+# ── IDE — Eclipse / STS ───────────────────────────────────────────────────────
 .project
 .classpath
 .settings/
 .factorypath
+bin/
 
-# Temp / serialization
+# ── IDE — VS Code ─────────────────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+log/
+
+# ── OS-generated files ────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Temporary / cache / serialization ────────────────────────────────────────
 *.ser
 *.tmp
 *.bak
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Maven build folder
-target/
-
-# Java compiled files
-*.class
-*.jar
-*.war
-*.ear
-
-# Eclipse files
-.settings/
-.classpath
-.project
-
-# IntelliJ IDEA
-.idea/
-*.iml
-
-# VS Code
-.vscode/
-
-# Logs
-*.log
-logs/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Environment files
-.env
-.env.*
-
-# Temporary files
+*.swp
+*.swo
 tmp/
 temp/
 
-# Maven wrapper (optional)
-# .mvn/
-# mvnw
-# mvnw.cmd
+# ── Spring Boot DevTools ──────────────────────────────────────────────────────
+.spring-boot-devtools.properties
+
+# ── Test / coverage reports ───────────────────────────────────────────────────
+/test-results/
+/test-output/
+*.exec
+jacoco.exec
+surefire-reports/
+
+# ── Local startup / helper scripts (machine-specific) ────────────────────────
+start-microservices.ps1
+kill-ports.bat
+kill-ports.ps1
+start-dev.bat*
+run.bat
+**/run.bat
+
+# ── Local run/demo files (RunUC*) ────────────────────────────────────────────
+RunUC*
+RunUC*.java
+RunUC*.class
+**/RunUC*
+**/RunUC*.java
+**/RunUC*.class
+
