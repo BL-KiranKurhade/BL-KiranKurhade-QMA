@@ -61,7 +61,7 @@ public class AuthService {
     public AuthResponse getMe(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) return AuthResponse.err("User not found");
-        return AuthResponse.ok(null, toDto(user));
+        return AuthResponse.ok(null, null, toDto(user));
     }
 
     // ── Tokens ───────────────────────────────────────────────────────────────────
