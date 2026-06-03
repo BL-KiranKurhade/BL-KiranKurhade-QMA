@@ -18,8 +18,13 @@ import java.util.Map;
  *
  * Every successful conversion is saved to MySQL (conversion_history).
  */
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Service
 public class ConversionService {
+
+    private static final Logger logger = LogManager.getLogger(ConversionService.class);
 
     // ── Built-in unit factor maps ─────────────────────────────────────────────
 

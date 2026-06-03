@@ -112,9 +112,9 @@ services:
   - type: web
     name: qma-frontend
     runtime: docker
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
+    dockerfilePath: ../BL-KiranKurhade-QuantityMeasurementApp-Frontend/Dockerfile
+    dockerContext: ../BL-KiranKurhade-QuantityMeasurementApp-Frontend
     plan: free
     envVars:
-      - key: API_GATEWAY_HOST
-        value: bl-kirankurhade-qma-32wf.onrender.com
+      - key: REACT_APP_API_URL
+        value: https://bl-kirankurhade-qma-32wf.onrender.com

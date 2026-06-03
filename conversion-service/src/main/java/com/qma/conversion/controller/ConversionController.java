@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/convert")
 public class ConversionController {
+
+    private static final Logger logger = LogManager.getLogger(ConversionController.class);
 
     @Autowired private ConversionService conversionService;
     @Autowired private ConversionHistoryRepository historyRepo;
@@ -40,7 +44,7 @@ public class ConversionController {
     )
     @ApiResponse(responseCode = "200", description = "Conversion result + history saved")
     @GetMapping
-    public ResponseEntity<Map<String, Object>> convert(
+    public ResponseEntity<com.qma.conversion.dto.ApiResponse<Map<String, Object>>> convert(
             @Parameter(description = "Numeric value to convert", example = "100")
             @RequestParam double value,
             @Parameter(description = "Source unit, e.g. cm, kg, l", example = "cm")
@@ -52,9 +56,11 @@ public class ConversionController {
             HttpServletRequest request) {
 
         String username = jwtUtil.extractUsername(request);
+        logger.info("User {} requested conversion: {} {} to {} ({})", username, value, from, to, category);
         double result   = conversionService.convert(value, from, to, category, username);
+        logger.debug("Conversion result for User {}: {}", username, result);
 
-        return ResponseEntity.ok(Map.of(
+        Map<String, Object> data = Map.of(
             "input",    value,
             "from",     from,
             "to",       to,
@@ -62,7 +68,8 @@ public class ConversionController {
             "result",   result,
             "username", username,
             "service",  "conversion-service"
-        ));
+        );
+        return ResponseEntity.ok(new com.qma.conversion.dto.ApiResponse<>(true, "Conversion successful", data));
     }
 
     // ── Conversion History ────────────────────────────────────────────────────
@@ -75,6 +82,7 @@ public class ConversionController {
     @GetMapping("/history")
     public ResponseEntity<List<ConversionHistory>> getHistory(HttpServletRequest request) {
         String username = jwtUtil.extractUsername(request);
+        logger.info("User {} requested their conversion history", username);
         return ResponseEntity.ok(historyRepo.findByUsernameOrderByCreatedAtDesc(username));
     }
 

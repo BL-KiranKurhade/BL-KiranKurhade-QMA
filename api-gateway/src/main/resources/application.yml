@@ -15,8 +15,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "${ALLOWED_ORIGIN:https://frontend-tql5.onrender.com}"
-              - "http://localhost:3000"
+              - "${CORS_ALLOWED_ORIGINS:https://frontend-tql5.onrender.com}"
             allowedMethods:
               - GET
               - POST
@@ -31,25 +30,25 @@ spring:
         # AUTH_SERVICE_URL env var → use direct HTTPS on Render
         # Falls back to lb://auth-service for local development
         - id: auth-service
-          uri: ${AUTH_SERVICE_URL:lb://auth-service}
+          uri: ${AUTH_SERVICE_URL:https://auth-service-6wmi.onrender.com}
           predicates:
             - Path=/api/auth/**
 
         - id: conversion-service
-          uri: ${CONVERSION_SERVICE_URL:lb://conversion-service}
+          uri: ${CONVERSION_SERVICE_URL:https://bl-kirankurhade-qma-gae4.onrender.com}
           predicates:
             - Path=/api/convert/**
 
         # ── Swagger API-Docs aggregation routes ───────────────────────────────
         - id: auth-service-docs
-          uri: ${AUTH_SERVICE_URL:lb://auth-service}
+          uri: ${AUTH_SERVICE_URL:https://auth-service-6wmi.onrender.com}
           predicates:
             - Path=/v3/api-docs/auth-service
           filters:
             - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
 
         - id: conversion-service-docs
-          uri: ${CONVERSION_SERVICE_URL:lb://conversion-service}
+          uri: ${CONVERSION_SERVICE_URL:https://bl-kirankurhade-qma-gae4.onrender.com}
           predicates:
             - Path=/v3/api-docs/conversion-service
           filters:
@@ -67,7 +66,7 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: https://eureka-server-u2c0.onrender.com/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:https://eureka-server-u2c0.onrender.com/eureka/}
     fetch-registry: false
     register-with-eureka: false
   instance:

@@ -4,12 +4,13 @@ public class AuthResponse {
     private boolean success;
     private String message;
     private String token;
+    private String refreshToken;
     private String tokenType = "Bearer";
     private UserDto user;
 
-    public static AuthResponse ok(String token, UserDto user) {
+    public static AuthResponse ok(String token, String refreshToken, UserDto user) {
         AuthResponse r = new AuthResponse();
-        r.success = true; r.message = "Success"; r.token = token; r.user = user;
+        r.success = true; r.message = "Success"; r.token = token; r.refreshToken = refreshToken; r.user = user;
         return r;
     }
     public static AuthResponse err(String message) {
@@ -21,6 +22,7 @@ public class AuthResponse {
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
     public String getToken() { return token; }
+    public String getRefreshToken() { return refreshToken; }
     public String getTokenType() { return tokenType; }
     public UserDto getUser() { return user; }
 
